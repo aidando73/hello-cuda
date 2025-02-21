@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-
+import math
 class LLTM(torch.nn.Module):
     def __init__(self, input_features, state_size):
         super(LLTM, self).__init__()
@@ -39,51 +39,49 @@ class LLTM(torch.nn.Module):
 
         return new_h, new_cell
 
-
-# Test 1: Basic functionality
-def test_simple():
-    print("Test 1: Basic functionality")
-    X = torch.tensor([[1., 2.]], dtype=torch.float32)
-    weights = torch.tensor([[0.1, 0.2], [0.3, 0.4]], dtype=torch.float32)
-    bias = torch.tensor([0.1, 0.2], dtype=torch.float32)
-
-    gate_weights = F.linear(X, weights, bias)
-    print(f"Input X: {X}")
-    print(f"Weights: {weights}")
-    print(f"Bias: {bias}")
-    print(f"Output: {gate_weights}")
-    print(f"Output shape: {gate_weights.shape}\n")
-
-# Test 2: Batch processing
-def test_batch():
-    print("Test 2: Batch processing")
-    X = torch.tensor([[1., 2.], [3., 4.]], dtype=torch.float32)
-    weights = torch.tensor([[0.1, 0.2], [0.3, 0.4]], dtype=torch.float32)
-    bias = torch.tensor([0.1, 0.2], dtype=torch.float32)
-
-    gate_weights = F.linear(X, weights, bias)
-    print(f"Batch Input X: {X}")
-    print(f"Output: {gate_weights}")
-    print(f"Output shape: {gate_weights.shape}\n")
-
-# Test 3: With random values
-def test_random():
-    print("Test 3: Random values")
-    batch_size = 2
-    input_features = 4
-    output_features = 3
+def test_lltm():
+    # Set random seed for reproducibility
+    torch.manual_seed(42)
     
-    X = torch.randn(batch_size, input_features)
-    weights = torch.randn(output_features, input_features)
-    bias = torch.randn(output_features)
-
-    gate_weights = F.linear(X, weights, bias)
-    print(f"Input shape: {X.shape}")
-    print(f"Weights shape: {weights.shape}")
-    print(f"Output shape: {gate_weights.shape}")
-    print(f"Output: {gate_weights}\n")
+    # Define dimensions
+    batch_size = 8
+    input_features = 32
+    state_size = 64
+    seq_length = 10
+    
+    # Create model instance
+    model = LLTM(input_features, state_size)
+    
+    # Generate random input sequence
+    input_seq = torch.randn(seq_length, batch_size, input_features)
+    
+    # Initialize hidden state and cell state
+    h = torch.zeros(batch_size, state_size)
+    c = torch.zeros(batch_size, state_size)
+    
+    # Process the sequence
+    print("Processing sequence...")
+    outputs = []
+    for t in range(seq_length):
+        h, c = model(input_seq[t], (h, c))
+        outputs.append(h)
+    
+    # Stack outputs into a single tensor
+    outputs = torch.stack(outputs)
+    
+    # Print some statistics
+    print(f"\nOutput shape: {outputs.shape}")
+    print(f"Output mean: {outputs.mean():.4f}")
+    print(f"Output std: {outputs.std():.4f}")
+    print(f"\nOutput tensor:\n{outputs}")
+    
+    # Test backward pass
+    loss = outputs.sum()
+    loss.backward()
+    
+    print("\nBackward pass completed successfully!")
+    print(f"Weight grad shape: {model.weights.grad.shape}")
+    print(f"Bias grad shape: {model.bias.grad.shape}")
 
 if __name__ == "__main__":
-    test_simple()
-    # test_batch()
-    # test_random()
+    test_lltm()
