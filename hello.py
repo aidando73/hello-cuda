@@ -39,6 +39,13 @@ class LLTM(torch.nn.Module):
 
         return new_h, new_cell
 
+def test_hello():
+    batch_size = 3
+    input_features = 4
+    seq_length = 3
+    input_seq = torch.randn(seq_length, batch_size, input_features)
+    print(input_seq)
+
 def test_lltm():
     # Set random seed for reproducibility
     torch.manual_seed(42)
@@ -84,4 +91,4 @@ def test_lltm():
     print(f"Bias grad shape: {model.bias.grad.shape}")
 
 if __name__ == "__main__":
-    test_lltm()
+    test_hello()
