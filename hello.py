@@ -36,9 +36,6 @@ class LLTM(torch.nn.Module):
         new_cell = old_cell + candidate_cell * input_gate
         # Compute the new hidden state and output.
         new_h = torch.tanh(new_cell) * output_gate
-
-        new_h = old_h
-        new_cell = old_cell
         return new_h, new_cell
 
 def test_hello():
