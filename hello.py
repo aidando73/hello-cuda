@@ -22,21 +22,23 @@ class LLTM(torch.nn.Module):
         old_h, old_cell = state
         X = torch.cat([old_h, input], dim=1)
 
-        # Compute the input, output and candidate cell gates with one MM.
-        gate_weights = F.linear(X, self.weights, self.bias)
-        # Split the combined gate weight matrix into its components.
-        gates = gate_weights.chunk(3, dim=1)
+        # # Compute the input, output and candidate cell gates with one MM.
+        # gate_weights = F.linear(X, self.weights, self.bias)
+        # # Split the combined gate weight matrix into its components.
+        # gates = gate_weights.chunk(3, dim=1)
 
-        input_gate = torch.sigmoid(gates[0])
-        output_gate = torch.sigmoid(gates[1])
-        # Here we use an ELU instead of the usual tanh.
-        candidate_cell = F.elu(gates[2])
+        # input_gate = torch.sigmoid(gates[0])
+        # output_gate = torch.sigmoid(gates[1])
+        # # Here we use an ELU instead of the usual tanh.
+        # candidate_cell = F.elu(gates[2])
 
-        # Compute the new cell state.
-        new_cell = old_cell + candidate_cell * input_gate
-        # Compute the new hidden state and output.
-        new_h = torch.tanh(new_cell) * output_gate
+        # # Compute the new cell state.
+        # new_cell = old_cell + candidate_cell * input_gate
+        # # Compute the new hidden state and output.
+        # new_h = torch.tanh(new_cell) * output_gate
 
+        new_h = old_h
+        new_cell = old_cell
         return new_h, new_cell
 
 def test_hello():
@@ -44,7 +46,19 @@ def test_hello():
     input_features = 4
     seq_length = 3
     input_seq = torch.randn(seq_length, batch_size, input_features)
-    print(input_seq)
+
+    # Initialize hidden state and cell state
+    state_size = 5
+    h = torch.zeros(batch_size, state_size)
+    c = torch.zeros(batch_size, state_size)
+
+    model = LLTM(input_features, state_size)
+    outputs = []
+    for t in range(seq_length):
+        h, c = model(input_seq[t], (h, c))
+        outputs.append(h)
+    outputs = torch.stack(outputs)
+    print(outputs)
 
 def test_lltm():
     # Set random seed for reproducibility
