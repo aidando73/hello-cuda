@@ -22,20 +22,20 @@ class LLTM(torch.nn.Module):
         old_h, old_cell = state
         X = torch.cat([old_h, input], dim=1)
 
-        # # Compute the input, output and candidate cell gates with one MM.
-        # gate_weights = F.linear(X, self.weights, self.bias)
-        # # Split the combined gate weight matrix into its components.
-        # gates = gate_weights.chunk(3, dim=1)
+        # Compute the input, output and candidate cell gates with one MM.
+        gate_weights = F.linear(X, self.weights, self.bias)
+        # Split the combined gate weight matrix into its components.
+        gates = gate_weights.chunk(3, dim=1)
 
-        # input_gate = torch.sigmoid(gates[0])
-        # output_gate = torch.sigmoid(gates[1])
+        input_gate = torch.sigmoid(gates[0])
+        output_gate = torch.sigmoid(gates[1])
         # # Here we use an ELU instead of the usual tanh.
-        # candidate_cell = F.elu(gates[2])
+        candidate_cell = F.elu(gates[2])
 
-        # # Compute the new cell state.
-        # new_cell = old_cell + candidate_cell * input_gate
-        # # Compute the new hidden state and output.
-        # new_h = torch.tanh(new_cell) * output_gate
+        # Compute the new cell state.
+        new_cell = old_cell + candidate_cell * input_gate
+        # Compute the new hidden state and output.
+        new_h = torch.tanh(new_cell) * output_gate
 
         new_h = old_h
         new_cell = old_cell
@@ -44,7 +44,7 @@ class LLTM(torch.nn.Module):
 def test_hello():
     batch_size = 3
     input_features = 4
-    seq_length = 3
+    seq_length = 1
     input_seq = torch.randn(seq_length, batch_size, input_features)
 
     # Initialize hidden state and cell state
