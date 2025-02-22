@@ -37,28 +37,28 @@ class LLTM(torch.nn.Module):
         for weight in self.parameters():
             weight.data.uniform_(-stdv, +stdv)
 
-    # def forward(self, input, state):
-    #     return LLTMFunction.apply(input, self.weights, self.bias, *state)
-
     def forward(self, input, state):
-        old_h, old_cell = state
-        X = torch.cat([old_h, input], dim=1)
+        return LLTMFunction.apply(input, self.weights, self.bias, *state)
 
-        # Compute the input, output and candidate cell gates with one MM.
-        gate_weights = F.linear(X, self.weights, self.bias)
-        # Split the combined gate weight matrix into its components.
-        gates = gate_weights.chunk(3, dim=1)
+    # def forward(self, input, state):
+    #     old_h, old_cell = state
+    #     X = torch.cat([old_h, input], dim=1)
 
-        input_gate = torch.sigmoid(gates[0])
-        output_gate = torch.sigmoid(gates[1])
-        # # Here we use an ELU instead of the usual tanh.
-        candidate_cell = F.elu(gates[2])
+    #     # Compute the input, output and candidate cell gates with one MM.
+    #     gate_weights = F.linear(X, self.weights, self.bias)
+    #     # Split the combined gate weight matrix into its components.
+    #     gates = gate_weights.chunk(3, dim=1)
 
-        # Compute the new cell state.
-        new_cell = old_cell + candidate_cell * input_gate
-        # Compute the new hidden state and output.
-        new_h = torch.tanh(new_cell) * output_gate
-        return new_h, new_cell
+    #     input_gate = torch.sigmoid(gates[0])
+    #     output_gate = torch.sigmoid(gates[1])
+    #     # # Here we use an ELU instead of the usual tanh.
+    #     candidate_cell = F.elu(gates[2])
+
+    #     # Compute the new cell state.
+    #     new_cell = old_cell + candidate_cell * input_gate
+    #     # Compute the new hidden state and output.
+    #     new_h = torch.tanh(new_cell) * output_gate
+    #     return new_h, new_cell
 
 def test_hello():
     batch_size = 3
