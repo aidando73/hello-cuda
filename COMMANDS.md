@@ -14,7 +14,7 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 sudo apt update
 sudo apt install clang build-essential
 
-
+nvcc add.cu -o add_cuda && ./add_cuda
 ```
 
 - Regular pytorch impl: Forward: 235.543 us | Backward 431.620 us
