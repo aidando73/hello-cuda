@@ -4,8 +4,8 @@ conda create --prefix ./env python=3.10
 conda activate ./env
 source ~/miniconda3/bin/activate ./env
 
-# Not sure if this is the correct version
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Install CUDA 
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 python hello.py
 
@@ -23,4 +23,10 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
 sudo apt update
 sudo apt install clang build-essential
+
+
 ```
+
+- Regular pytorch impl: Forward: 235.543 us | Backward 431.620 us
+- GPU impl: 226.908 us | Backward 695.002 us
+- CUDA impl: 
