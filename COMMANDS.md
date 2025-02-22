@@ -1,11 +1,10 @@
 ```bash
 source ~/miniconda3/bin/activate
 conda create --prefix ./env python=3.10
-conda activate ./env
 source ~/miniconda3/bin/activate ./env
 
 # Install CUDA 
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install --no-build-isolation torch==2.0.1+cu118 torchvision==0.15.2+cu118 --index-url https://download.pytorch.org/whl/cu118
 
 python hello.py
 
